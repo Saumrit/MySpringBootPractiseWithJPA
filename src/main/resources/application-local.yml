@@ -1,7 +1,13 @@
 spring:
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/mySpringBootPractise
+  datasource:
+    url: jdbc:mysql://localhost:3307/myapp_db
+    username: admin
+    password: password123
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
 server.port: 8085
 management:
   endpoints:

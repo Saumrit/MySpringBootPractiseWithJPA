@@ -1,10 +1,10 @@
-package com.saumrit.OpenAPISwaggerDemo;
+package com.saumrit.myspringbootwithjpa;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class OpenAPISwaggerDemoTests {
+class MySpringBootWithJPATests {
 
 	@Test
 	void contextLoads() {

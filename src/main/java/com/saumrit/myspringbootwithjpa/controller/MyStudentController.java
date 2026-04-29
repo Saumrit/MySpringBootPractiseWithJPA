@@ -1,7 +1,7 @@
-package com.saumrit.OpenAPISwaggerDemo.controller;
+package com.saumrit.myspringbootwithjpa.controller;
 
-import com.saumrit.OpenAPISwaggerDemo.model.StudentDTO;
-import com.saumrit.OpenAPISwaggerDemo.service.MyStudentService;
+import com.saumrit.myspringbootwithjpa.model.StudentDTO;
+import com.saumrit.myspringbootwithjpa.service.MyStudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

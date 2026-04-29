@@ -1,7 +1,7 @@
-package com.saumrit.OpenAPISwaggerDemo.service;
+package com.saumrit.myspringbootwithjpa.service;
 
-import com.saumrit.OpenAPISwaggerDemo.model.StudentDTO;
-import com.saumrit.OpenAPISwaggerDemo.repository.MyStudentRepository;
+import com.saumrit.myspringbootwithjpa.model.StudentDTO;
+import com.saumrit.myspringbootwithjpa.repository.MyStudentRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +30,7 @@ public class MyStudentService {
     }
 
     public void addSingleStudent(StudentDTO studentDTO){
-        myStudentRepository.insert(studentDTO);
+        myStudentRepository.save(studentDTO);
     }
 
     public StudentDTO updateSingleStudent(StudentDTO studentDTO){
