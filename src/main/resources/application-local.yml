@@ -1,0 +1,10 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/mySpringBootPractise
+server.port: 8085
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings

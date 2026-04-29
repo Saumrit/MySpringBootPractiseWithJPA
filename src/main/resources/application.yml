@@ -1,0 +1,16 @@
+spring:
+  profiles.active: local
+  data:
+    mongodb:
+#      uri: mongodb://localhost:27017/myone
+#      host: localhost
+#      port: 27017
+#      database: myone
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings
+springdoc:
+  swagger-ui:
+    path: "/swagger-ui.html"
