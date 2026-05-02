@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.time.LocalDateTime;
 
+/**
+ * This class is to show the Composite primary key using Id-class
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
