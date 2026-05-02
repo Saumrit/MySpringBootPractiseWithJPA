@@ -34,5 +34,13 @@ public class Student {
     })
     public Assignment assignment;
 
+    private BioData bioData;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "awardsList")
+    private List<String> awardsOwned;
+
+
+
 
 }

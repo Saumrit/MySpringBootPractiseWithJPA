@@ -25,4 +25,13 @@ public class Lecture {
 
     @OneToMany(mappedBy = "lecture")
     private List<Assignment> theAssignmentsList;
+
+    @Embedded
+    @ElementCollection
+    @CollectionTable
+    @AttributeOverrides({
+            @AttributeOverride(name = "name",column = @Column(name = "certification_name")),
+            @AttributeOverride(name = "authoredBy",column = @Column(name = "issuance_org_name"))
+    })
+    private List<Certification> certificationList;
 }
