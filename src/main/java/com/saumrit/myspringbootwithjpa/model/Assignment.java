@@ -1,0 +1,30 @@
+package com.saumrit.myspringbootwithjpa.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity(name = "assignment")
+@Access(AccessType.FIELD)
+@IdClass(value = TheAssignmentId.class)
+public class Assignment {
+
+    @Id
+    private Long studentId;
+    @Id
+    private Long subjectId;
+
+    @Column(name = "assigned_date")
+    private LocalDateTime assignedDate= LocalDateTime.from(Instant.now());
+
+    @ManyToOne
+    @JoinColumn(name = "lecture_id",referencedColumnName = "id")
+    private Lecture lecture;
+}

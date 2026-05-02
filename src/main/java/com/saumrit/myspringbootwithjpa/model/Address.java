@@ -13,13 +13,12 @@ import lombok.NoArgsConstructor;
 public class Address {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public long id;
     public String city;
     public String state;
     public Integer zipcode;
     public String country;
-    @OneToOne(orphanRemoval = true,cascade = {CascadeType.ALL})
-    @JoinColumn(name = "student_id")
-    public StudentDTO theStudent;
+    @OneToOne(orphanRemoval = false,cascade = {CascadeType.DETACH},mappedBy = "address")
+    public Student theStudent;
 }

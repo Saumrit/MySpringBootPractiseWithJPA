@@ -1,6 +1,6 @@
 package com.saumrit.myspringbootwithjpa.controller;
 
-import com.saumrit.myspringbootwithjpa.model.StudentDTO;
+import com.saumrit.myspringbootwithjpa.model.Student;
 import com.saumrit.myspringbootwithjpa.service.MyStudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,7 +27,7 @@ public class MyStudentController {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public List<StudentDTO> getAllStudents(){
+    public List<Student> getAllStudents(){
         return myStudentService.fetchAllStudent();
     }
 
@@ -39,7 +39,7 @@ public class MyStudentController {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public List<StudentDTO> getAllStudentsSortedBy(@RequestParam String sortPropertyName){
+    public List<Student> getAllStudentsSortedBy(@RequestParam String sortPropertyName){
         return myStudentService.fetchAllStudentSortedBy(sortPropertyName);
     }
 
@@ -51,8 +51,8 @@ public class MyStudentController {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public void addSingleStudent(@RequestBody StudentDTO studentDTO){
-        myStudentService.addSingleStudent(studentDTO);
+    public void addSingleStudent(@RequestBody Student student){
+        myStudentService.addSingleStudent(student);
     }
 
     @Operation(summary = "Api to remove a Student",
@@ -75,8 +75,8 @@ public class MyStudentController {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public StudentDTO updateSingleStudent(@RequestBody StudentDTO studentDTO){
-        return myStudentService.updateSingleStudent(studentDTO);
+    public Student updateSingleStudent(@RequestBody Student student){
+        return myStudentService.updateSingleStudent(student);
     }
 
     @Operation(summary = "Api to patch update a Student",
@@ -87,8 +87,8 @@ public class MyStudentController {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public StudentDTO patchUpdateSingleStudent(@RequestBody StudentDTO studentDTO){
-        return myStudentService.updateSingleStudent(studentDTO);
+    public Student patchUpdateSingleStudent(@RequestBody Student student){
+        return myStudentService.updateSingleStudent(student);
     }
 
 
