@@ -25,7 +25,9 @@ public class Lecture {
 
     @OneToMany(mappedBy = "lecture")
     private List<Assignment> theAssignmentsList;
-
+    //Here No @ElementCollection or @CollectionTable is used as Assignment is an entity class
+    //And these two annotations are used for non-entity types.
+    //But below Certification is non-entity, hence the two annotations are used
     @Embedded
     @ElementCollection
     @CollectionTable

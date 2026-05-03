@@ -40,6 +40,17 @@ public class Student {
     @CollectionTable(name = "awardsList")
     private List<String> awardsOwned;
 
+    @ManyToMany
+    @JoinTable(name = "ONLINE_COURSE_ENROLLMENT",
+    joinColumns = @JoinColumn(name = "student_ID", referencedColumnName = "id"),
+    inverseJoinColumns = @JoinColumn(name = "course_Name", referencedColumnName = "courseName"))
+    private List<TutorialCourse> tutorialCourses;
+    //As i can see here , for courses, i used the name instead of ID
+    //Since name and Id Both are Unique in my case
+    //No Course pf same category will have same name
+    //for eg. Two SpringBoot courses are there :
+    //1> SpringBoot By Mr. Saumrit
+    //2> Chappar-Faad SpringBoot By Ms. DunDunLisa
 
 
 
