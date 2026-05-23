@@ -7,6 +7,13 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+#      naming:
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+app:
+  datasource:
+    url: jdbc:mysql://localhost:3307/myapp_db
+    username: admin
+    password: password123
 
 server.port: 8085
 management:
@@ -14,3 +21,6 @@ management:
     web:
       exposure:
         include: mappings
+
+logging.level.org.springframework.orm.jpa : DEBUG
+logging.level.org.springframework.transaction: DEBUG

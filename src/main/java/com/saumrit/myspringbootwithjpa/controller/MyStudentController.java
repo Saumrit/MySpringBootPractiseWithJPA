@@ -1,5 +1,8 @@
 package com.saumrit.myspringbootwithjpa.controller;
 
+import com.saumrit.myspringbootwithjpa.dto.GETStudentResponseDTO;
+import com.saumrit.myspringbootwithjpa.dto.POSTStudentRequestDTO;
+import com.saumrit.myspringbootwithjpa.dto.StudentWithHouseNumberDetailDto;
 import com.saumrit.myspringbootwithjpa.model.Student;
 import com.saumrit.myspringbootwithjpa.service.MyStudentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +22,18 @@ public class MyStudentController {
         this.myStudentService = myStudentService;
     }
 
+    @Operation(summary = "Api to add a Student",
+            description = "Api to add a Student")
+    @PostMapping("/addSingleStudent")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Success"),
+            @ApiResponse(responseCode = "400",description = "Bad Request"),
+            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
+    public void addSingleStudent(@RequestBody POSTStudentRequestDTO POSTStudentRequestDTO){
+        myStudentService.addSingleStudent(POSTStudentRequestDTO);
+    }
+
     @Operation(summary = "Api to get All Students",
     description = "Api to get All Students")
     @GetMapping("/getAllStudents")
@@ -27,8 +42,32 @@ public class MyStudentController {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public List<Student> getAllStudents(){
+    public List<GETStudentResponseDTO> getAllStudents(){
         return myStudentService.fetchAllStudent();
+    }
+
+    @Operation(summary = "Api to get All Students From A certain Address",
+            description = "Api to get All Students From A certain Address")
+    @GetMapping("/getAllStudentsFromCertainAddress")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Success"),
+            @ApiResponse(responseCode = "400",description = "Bad Request"),
+            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
+    public List<StudentWithHouseNumberDetailDto> getAllStudentsWithAddressDetail(@RequestParam("city") String city, @RequestParam("state") String state){
+        return myStudentService.fetchStudentWithHouseDetails(city,state);
+    }
+
+    @Operation(summary = "Api to get All Students",
+            description = "Api to get All Students")
+    @GetMapping("/getAllNRIStudents")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Success"),
+            @ApiResponse(responseCode = "400",description = "Bad Request"),
+            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
+    public List<GETStudentResponseDTO> getAllNRIStudentsOfSpecificState(@RequestParam String stateName){
+        return myStudentService.getTheNRIStudentFromThisState(stateName);
     }
 
     @Operation(summary = "Api to get All Students with Sorting applied",
@@ -39,20 +78,44 @@ public class MyStudentController {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public List<Student> getAllStudentsSortedBy(@RequestParam String sortPropertyName){
+    public List<GETStudentResponseDTO> getAllStudentsSortedBy(@RequestParam String sortPropertyName){
         return myStudentService.fetchAllStudentSortedBy(sortPropertyName);
     }
 
-    @Operation(summary = "Api to add a Student",
-            description = "Api to add a Student")
-    @PostMapping("/addSingleStudent")
-    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Api to get A Student With Special character Support",
+            description = "Api to get A Student With Special character Support")
+    @GetMapping("/advanceSearchForStudent")
+    @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public void addSingleStudent(@RequestBody Student student){
-        myStudentService.addSingleStudent(student);
+    public GETStudentResponseDTO advanceSearchForStudent(@RequestParam String sortPropertyName){
+        return myStudentService.getStudentWithAdvanceNameSearch(sortPropertyName);
+    }
+
+    @Operation(summary = "Api to get a Student by searching with name or rollID",
+            description = "Api to get a Student by searching with name or rollID")
+    @GetMapping("/getAStudentByNameOrRollId")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Success"),
+            @ApiResponse(responseCode = "400",description = "Bad Request"),
+            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
+    public GETStudentResponseDTO getAStudentByNameORRollNumber(@RequestParam String name, @RequestParam String roll){
+        return myStudentService.fetchAStudentByNameOrRollId(name,roll);
+    }
+
+    @Operation(summary = "Api to Update NRI Status of a Student",
+            description = "Api to Update NRI Status of a Student")
+    @PutMapping("/NRI-status")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Success"),
+            @ApiResponse(responseCode = "400",description = "Bad Request"),
+            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
+    public int  updateNRIStatusForSingleStudent(@RequestParam String roll,@RequestParam boolean status){
+        return myStudentService.updateTheNRIStatusOFAnyStudent(roll, status);
     }
 
     @Operation(summary = "Api to remove a Student",

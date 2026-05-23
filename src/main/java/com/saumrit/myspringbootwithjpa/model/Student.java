@@ -12,28 +12,35 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "student")
+@Entity(name = "Student")//if i give any other name , that i have to use instead of Student, under @Query
 @Access(AccessType.FIELD)
+@NamedQueries({
+        @NamedQuery(name="Student.findNRIStudentsFromGivenState",
+                query = "select s from Student s where s.bioData.nriStatus= true") // s.address.state= ?1 AND
+})
+@Cacheable(value = true)
 public class Student {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private long id;
 
-    public String name;
-    public String standard;
-    public Integer age;
+    private String rollId;
+    private String name;
+    private String standard;
+    private Integer age;
     @OneToOne(orphanRemoval = true,cascade = {CascadeType.ALL})
     @JoinColumn(name = "address_id",referencedColumnName = "id")
-    public Address address;
+    private Address address;
 
     @OneToOne
     @JoinColumns({
             @JoinColumn(name = "assignments_student_id",referencedColumnName = "studentId"),
             @JoinColumn(name = "assignments_subject_id",referencedColumnName ="subjectId" )
     })
-    public Assignment assignment;
+    private Assignment assignment;
 
+    @Embedded
     private BioData bioData;
 
     @ElementCollection(fetch = FetchType.LAZY)

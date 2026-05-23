@@ -3,10 +3,12 @@ spring:
     url: jdbc:mysql://localhost:3307/myapp_db
     username: admin
     password: password123
-  jps:
+  jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
+#      naming:
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   profiles.active: local
 
 

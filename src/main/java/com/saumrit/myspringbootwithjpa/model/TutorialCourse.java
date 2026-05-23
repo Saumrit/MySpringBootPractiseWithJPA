@@ -1,5 +1,6 @@
 package com.saumrit.myspringbootwithjpa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.saumrit.myspringbootwithjpa.model.enums.CourseCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import java.util.List;
 @Entity
 public class TutorialCourse {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.SEQUENCE)
     private Long id;
     private String courseName;
     //No Course of same category will have same name

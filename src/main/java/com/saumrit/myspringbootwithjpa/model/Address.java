@@ -9,13 +9,16 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "address")
+@Entity(name = "address")//just fpr bak-chodi , i used this annotation
 public class Address {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     public long id;
     public String city;
+
+    @Column(unique = true)
+    public Long houseRegNumber;
     public String state;
     public Integer zipcode;
     public String country;
