@@ -1,12 +1,16 @@
 package com.saumrit.myspringbootwithjpa.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.saumrit.myspringbootwithjpa.dto.AssignmentResponseDTO;
 import com.saumrit.myspringbootwithjpa.dto.GETStudentResponseDTO;
 import com.saumrit.myspringbootwithjpa.dto.POSTStudentRequestDTO;
 import com.saumrit.myspringbootwithjpa.dto.StudentWithHouseNumberDetailDto;
-import com.saumrit.myspringbootwithjpa.model.Address;
-import com.saumrit.myspringbootwithjpa.model.Student;
+import com.saumrit.myspringbootwithjpa.model.*;
+import com.saumrit.myspringbootwithjpa.model.enums.CourseCategory;
+import com.saumrit.myspringbootwithjpa.repository.MyAssignmentRepository;
 import com.saumrit.myspringbootwithjpa.repository.MyStudentRepository;
+import com.saumrit.myspringbootwithjpa.repository.MySubjectRepository;
+import com.saumrit.myspringbootwithjpa.util.CommonConvertorUtil;
 import com.saumrit.myspringbootwithjpa.util.UniqueIdGeneratorUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Limit;
@@ -14,17 +18,25 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
 public class MyStudentService {
 
     public final MyStudentRepository myStudentRepository ;
+    public final MySubjectRepository mySubjectRepository;
+    public final MyAssignmentRepository myAssignmentRepository;
+    public final MyTutorialCourseService myTutorialCourseService;
     public final UniqueIdGeneratorUtil uniqueIdGeneratorUtil;
     public final ObjectMapper objectMapper;
 
-    public MyStudentService(MyStudentRepository myStudentRepository, UniqueIdGeneratorUtil uniqueIdGeneratorUtil, ObjectMapper objectMapper) {
+    public MyStudentService(MyStudentRepository myStudentRepository, MySubjectRepository mySubjectRepository, MyAssignmentRepository myAssignmentRepository, MyTutorialCourseService myTutorialCourseService, UniqueIdGeneratorUtil uniqueIdGeneratorUtil, ObjectMapper objectMapper) {
         this.myStudentRepository=myStudentRepository;
+        this.mySubjectRepository = mySubjectRepository;
+        this.myAssignmentRepository = myAssignmentRepository;
+        this.myTutorialCourseService = myTutorialCourseService;
         this.uniqueIdGeneratorUtil = uniqueIdGeneratorUtil;
         this.objectMapper = objectMapper;
     }
@@ -51,7 +63,7 @@ public class MyStudentService {
     public GETStudentResponseDTO fetchAStudentByNameOrRollId(String name , String roll){
         if(null== name && null == roll)
             return null;
-        Student student= myStudentRepository.findByNameOrRollId(name, roll, Limit.of(1));
+        Student student= myStudentRepository.findByNameOrRollId(name, roll);
         return objectMapper.convertValue(student, GETStudentResponseDTO.class);
     }
 
@@ -74,6 +86,54 @@ public class MyStudentService {
 
     public Student updateSingleStudent(Student student){
         return myStudentRepository.save(student);
+    }
+
+    @Transactional
+    public AssignmentResponseDTO updateSingleStudentWithAssignmentDetail(String rollId, String subjectName){
+        Student student= myStudentRepository.findByNameOrRollId( null,rollId);
+        if(ObjectUtils.isEmpty(student))
+            return null;
+        Subject subject = mySubjectRepository.findByName(subjectName);
+        if(ObjectUtils.isEmpty(subject)){
+            subject= new Subject();
+            subject.setName(subjectName);
+            subject=mySubjectRepository.save(subject);
+        }
+        Assignment assignment= new Assignment();
+        assignment.setStudent(student);
+        assignment.setSubject(subject);
+        myAssignmentRepository.save(assignment);
+
+        return CommonConvertorUtil.assignmentToAssignmentResponseDTO(assignment);
+    }
+
+    @Transactional
+    public Student updateSingleStudentWithAwardDetail(String rollId, List<String> awards){
+        Student student= myStudentRepository.findByNameOrRollId( null,rollId);
+        if(ObjectUtils.isEmpty(student))
+            return null;
+        student.setAwardsOwned(awards);
+        Student response= myStudentRepository.save(student);
+
+        return response;
+    }
+
+    @Transactional
+    public Student updateSingleStudentWithTutoriaCourseDetail(String rollId, String courseName, CourseCategory category){
+
+        Student student= myStudentRepository.findByNameOrRollId( null,rollId);
+        if(ObjectUtils.isEmpty(student))
+            return null;
+
+        TutorialCourse tutorialCourse= myTutorialCourseService.fetchCourse(courseName);
+        if(null == tutorialCourse.getCourseName())
+            return null;
+
+        if(null == student.getTutorialCourses())
+            student.setTutorialCourses(List.of(tutorialCourse));
+        else
+            student.getTutorialCourses().add(tutorialCourse);
+        return  myStudentRepository.save(student);
     }
 
     @Transactional
@@ -106,6 +166,17 @@ public class MyStudentService {
                 .stream().map(x -> {
                     StudentWithHouseNumberDetailDto studentWithHouseNumberDetailDto= new StudentWithHouseNumberDetailDto();
                     studentWithHouseNumberDetailDto.setHouseNumber(x.getAddress().houseRegNumber.toString());
+                    studentWithHouseNumberDetailDto.setName(x.getName());
+                    studentWithHouseNumberDetailDto.setRoll(x.getRollId());
+                    return studentWithHouseNumberDetailDto;
+                }).toList();
+    }
+
+    public List<StudentWithHouseNumberDetailDto> fetchStudentWithHouseDetailsLeftOuterJoin(String city, String state){
+        return myStudentRepository.getStudentsFromThisStateLeftOuterJoin(city,state)
+                .stream().map(x -> {
+                    StudentWithHouseNumberDetailDto studentWithHouseNumberDetailDto= new StudentWithHouseNumberDetailDto();
+                    studentWithHouseNumberDetailDto.setHouseNumber(x.getAddress().houseRegNumber.toString());//here this will be null because of Left outer join
                     studentWithHouseNumberDetailDto.setName(x.getName());
                     studentWithHouseNumberDetailDto.setRoll(x.getRollId());
                     return studentWithHouseNumberDetailDto;

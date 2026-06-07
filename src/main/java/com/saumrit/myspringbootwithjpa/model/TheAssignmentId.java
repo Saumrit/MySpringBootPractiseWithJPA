@@ -11,18 +11,18 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TheAssignmentId implements Serializable {
-    private Long studentId;
-    private Long subjectId;
+    private long student;
+    private long subject;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof TheAssignmentId that)) return false;
-        return Objects.equals(studentId, that.studentId) && Objects.equals(subjectId, that.subjectId);
+        return Objects.equals(student, that.student) && Objects.equals(subject, that.subject);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(studentId, subjectId);
+        return Objects.hash(student, subject);
     }
 }

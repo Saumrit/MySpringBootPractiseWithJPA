@@ -22,5 +22,12 @@ management:
       exposure:
         include: mappings
 
-logging.level.org.springframework.orm.jpa : DEBUG
-logging.level.org.springframework.transaction: DEBUG
+
+
+logging:
+  level:
+    org:
+      springframework:
+        transaction: DEBUG
+        orm.jpa : DEBUG
+      hibernate.orm.jdbc.bind: trace #This property will show the sql queries with binding parameters instead of ?

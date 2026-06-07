@@ -1,5 +1,7 @@
 package com.saumrit.myspringbootwithjpa.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,14 +33,15 @@ public class Student {
     private Integer age;
     @OneToOne(orphanRemoval = true,cascade = {CascadeType.ALL})
     @JoinColumn(name = "address_id",referencedColumnName = "id")
+    @JsonBackReference
     private Address address;
 
-    @OneToOne
-    @JoinColumns({
-            @JoinColumn(name = "assignments_student_id",referencedColumnName = "studentId"),
-            @JoinColumn(name = "assignments_subject_id",referencedColumnName ="subjectId" )
-    })
-    private Assignment assignment;
+//    @OneToOne
+//    @JoinColumns({
+//            @JoinColumn(name = "assignments_student_id",referencedColumnName = "studentId"),
+//            @JoinColumn(name = "assignments_subject_id",referencedColumnName ="subjectId" )
+//    })
+//    private Assignment assignment;
 
     @Embedded
     private BioData bioData;

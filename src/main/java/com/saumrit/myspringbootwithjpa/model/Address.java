@@ -1,14 +1,17 @@
 package com.saumrit.myspringbootwithjpa.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = "theStudent")//this is add on  to avoid stackOverflow due to circular dependency issue
 @Entity(name = "address")//just fpr bak-chodi , i used this annotation
 public class Address {
 
@@ -22,6 +25,8 @@ public class Address {
     public String state;
     public Integer zipcode;
     public String country;
-    @OneToOne(orphanRemoval = false,cascade = {CascadeType.DETACH},mappedBy = "address")
+    @OneToOne(mappedBy = "address")
+    @JsonManagedReference
     public Student theStudent;
+    //here if i do not use this annotation , i will get stackOverFLow exception during toString() as student has address which has student which has address ......
 }

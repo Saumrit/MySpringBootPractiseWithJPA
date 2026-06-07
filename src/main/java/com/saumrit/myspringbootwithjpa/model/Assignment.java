@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * This class is to show the Composite primary key using Id-class
@@ -20,12 +21,14 @@ import java.time.LocalDateTime;
 public class Assignment {
 
     @Id
-    private Long studentId;
+    @ManyToOne
+    private Student student;//here data type is Student instead of Long
     @Id
-    private Long subjectId;
+    @ManyToOne
+    private Subject subject;//same as above
 
     @Column(name = "assigned_date")
-    private LocalDateTime assignedDate= LocalDateTime.from(Instant.now());
+    private LocalDateTime assignedDate= Instant.now().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
     @ManyToOne
     @JoinColumn(name = "lecture_id",referencedColumnName = "id")

@@ -1,9 +1,12 @@
 package com.saumrit.myspringbootwithjpa.controller;
 
+import com.saumrit.myspringbootwithjpa.dto.AssignmentResponseDTO;
 import com.saumrit.myspringbootwithjpa.dto.GETStudentResponseDTO;
 import com.saumrit.myspringbootwithjpa.dto.POSTStudentRequestDTO;
 import com.saumrit.myspringbootwithjpa.dto.StudentWithHouseNumberDetailDto;
+import com.saumrit.myspringbootwithjpa.model.Assignment;
 import com.saumrit.myspringbootwithjpa.model.Student;
+import com.saumrit.myspringbootwithjpa.model.enums.CourseCategory;
 import com.saumrit.myspringbootwithjpa.service.MyStudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,8 +25,8 @@ public class MyStudentController {
         this.myStudentService = myStudentService;
     }
 
-    @Operation(summary = "Api to add a Student",
-            description = "Api to add a Student")
+    @Operation(summary = "Circular Exception in Bidirectional Mapping + @JsonManagedReference + @JsonBackReference",
+            description = "Api to add a Student+  Here check the annotation to tackle stackOverFlow Exception ")
     @PostMapping("/addSingleStudent")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
@@ -56,6 +59,18 @@ public class MyStudentController {
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
     public List<StudentWithHouseNumberDetailDto> getAllStudentsWithAddressDetail(@RequestParam("city") String city, @RequestParam("state") String state){
         return myStudentService.fetchStudentWithHouseDetails(city,state);
+    }
+
+    @Operation(summary = "Api to get All Students From A certain Address LEFT OUTER JOIN",
+            description = "Api to get All Students From A certain Address LEFT OUTER JOIN Demo")
+    @GetMapping("/getAllStudentsFromCertainAddressOuterJoin")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Success"),
+            @ApiResponse(responseCode = "400",description = "Bad Request"),
+            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
+    public List<StudentWithHouseNumberDetailDto> getAllStudentsWithAddressDetailLeftOuterJoin(@RequestParam("city") String city, @RequestParam("state") String state){
+        return myStudentService.fetchStudentWithHouseDetailsLeftOuterJoin(city,state);
     }
 
     @Operation(summary = "Api to get All Students",
@@ -153,6 +168,46 @@ public class MyStudentController {
     public Student patchUpdateSingleStudent(@RequestBody Student student){
         return myStudentService.updateSingleStudent(student);
     }
+
+    @Operation(summary = "Here composite Primary Key is explained through Assignment",
+            description = "Api to give assignments to a Student")
+    @PatchMapping("/assignment/{rollId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Success"),
+            @ApiResponse(responseCode = "400",description = "Bad Request"),
+            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
+    public AssignmentResponseDTO assignmentToStudent(@PathVariable("rollId") String rollId, @RequestParam("subject") String subject){
+        return myStudentService.updateSingleStudentWithAssignmentDetail(rollId,subject);
+    }
+
+
+    @Operation(summary = "Here @ElementCollection/@CollectionTable is used",
+            description = "Api to give assignments to a Student")
+    @PatchMapping("/award/{rollId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Success"),
+            @ApiResponse(responseCode = "400",description = "Bad Request"),
+            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
+    public Student awardsToStudent(@PathVariable("rollId") String rollId,@RequestBody List<String> awards){
+        return myStudentService.updateSingleStudentWithAwardDetail(rollId,awards);
+    }
+
+    @Operation(summary = "Here @Jointable is used",
+            description = "Api to give assignments to a Student")
+    @PatchMapping("/tutorialCourse/{rollId}/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Success"),
+            @ApiResponse(responseCode = "400",description = "Bad Request"),
+            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
+    public Student enrollStudentToTutorialCourse(@PathVariable("rollId") String rollId, @PathVariable("name") String courseName,
+                                                 @RequestParam("category")CourseCategory category){
+        return myStudentService.updateSingleStudentWithTutoriaCourseDetail(rollId,courseName,category);
+    }
+
+
 
 
 
