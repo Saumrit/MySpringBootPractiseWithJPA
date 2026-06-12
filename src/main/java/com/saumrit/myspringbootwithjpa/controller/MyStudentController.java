@@ -1,10 +1,9 @@
 package com.saumrit.myspringbootwithjpa.controller;
 
 import com.saumrit.myspringbootwithjpa.dto.AssignmentResponseDTO;
-import com.saumrit.myspringbootwithjpa.dto.GETStudentResponseDTO;
-import com.saumrit.myspringbootwithjpa.dto.POSTStudentRequestDTO;
+import com.saumrit.myspringbootwithjpa.dto.GetStudentResponseDTO;
+import com.saumrit.myspringbootwithjpa.dto.PostStudentRequestDTO;
 import com.saumrit.myspringbootwithjpa.dto.StudentWithHouseNumberDetailDto;
-import com.saumrit.myspringbootwithjpa.model.Assignment;
 import com.saumrit.myspringbootwithjpa.model.Student;
 import com.saumrit.myspringbootwithjpa.model.enums.CourseCategory;
 import com.saumrit.myspringbootwithjpa.service.MyStudentService;
@@ -33,7 +32,7 @@ public class MyStudentController {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public void addSingleStudent(@RequestBody POSTStudentRequestDTO POSTStudentRequestDTO){
+    public void addSingleStudent(@RequestBody PostStudentRequestDTO POSTStudentRequestDTO){
         myStudentService.addSingleStudent(POSTStudentRequestDTO);
     }
 
@@ -45,68 +44,72 @@ public class MyStudentController {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public List<GETStudentResponseDTO> getAllStudents(){
+    public List<GetStudentResponseDTO> getAllStudents(){
         return myStudentService.fetchAllStudent();
     }
 
-    @Operation(summary = "Api to get All Students From A certain Address",
-            description = "Api to get All Students From A certain Address")
-    @GetMapping("/getAllStudentsFromCertainAddress")
+
+
+    @Operation(summary = "Api to get All Students From A certain city and state combination",
+            description = "Api to show LEFT JOIN without FETCH usages")
+    @GetMapping("/{city}/{state}")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Success"),
+            @ApiResponse(responseCode = "400",description = "Bad Request"),
+            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
+    public List<GetStudentResponseDTO> getAllStudentsWithAddressDetailLeftOuterJoin(@PathVariable("city") String city, @PathVariable("state") String state){
+        return myStudentService.fetchStudentWithHouseDetailsLeftOuterJoinWithoutFetch(city,state);
+    }
+
+
+    @Operation(summary = "Api to get All Student's House-Detail From A certain certain city and state combination",
+            description = "Api to show usages of LEFT JOIN with FETCH")
+    @GetMapping("/{state}/{city}/houseDetail")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
     public List<StudentWithHouseNumberDetailDto> getAllStudentsWithAddressDetail(@RequestParam("city") String city, @RequestParam("state") String state){
-        return myStudentService.fetchStudentWithHouseDetails(city,state);
+        return myStudentService.fetchStudentWithHouseDetailsWithFetch(city,state);
     }
 
-    @Operation(summary = "Api to get All Students From A certain Address LEFT OUTER JOIN",
-            description = "Api to get All Students From A certain Address LEFT OUTER JOIN Demo")
-    @GetMapping("/getAllStudentsFromCertainAddressOuterJoin")
+
+    @Operation(summary = "Api to get All Students with ",
+            description = "Api to fetch data with boolean field and String field combination")
+    @GetMapping("/allNRIStudents")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public List<StudentWithHouseNumberDetailDto> getAllStudentsWithAddressDetailLeftOuterJoin(@RequestParam("city") String city, @RequestParam("state") String state){
-        return myStudentService.fetchStudentWithHouseDetailsLeftOuterJoin(city,state);
-    }
-
-    @Operation(summary = "Api to get All Students",
-            description = "Api to get All Students")
-    @GetMapping("/getAllNRIStudents")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "Success"),
-            @ApiResponse(responseCode = "400",description = "Bad Request"),
-            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public List<GETStudentResponseDTO> getAllNRIStudentsOfSpecificState(@RequestParam String stateName){
+    public List<GetStudentResponseDTO> getAllNRIStudentsOfSpecificState(@RequestParam String stateName){
         return myStudentService.getTheNRIStudentFromThisState(stateName);
     }
 
-    @Operation(summary = "Api to get All Students with Sorting applied",
-            description = "Api to get All Students in a sorted Order")
-    @GetMapping("/getAllStudentsSortedBy")
+    @Operation(summary = "Api to get All Students with Sorting applied on Their Age",
+            description = "Api to show usage of SORT")
+    @GetMapping("/allStudentsSortedByAge")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public List<GETStudentResponseDTO> getAllStudentsSortedBy(@RequestParam String sortPropertyName){
-        return myStudentService.fetchAllStudentSortedBy(sortPropertyName);
+    public List<GetStudentResponseDTO> getAllStudentsSortedByAge(){
+        return myStudentService.fetchAllStudentSortedByAge();
     }
 
-    @Operation(summary = "Api to get A Student With Special character Support",
-            description = "Api to get A Student With Special character Support")
+    @Operation(summary = "Search student by name having special character in their name",
+            description = "Api to show Special character Support in Spring data JPA")
     @GetMapping("/advanceSearchForStudent")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public GETStudentResponseDTO advanceSearchForStudent(@RequestParam String sortPropertyName){
-        return myStudentService.getStudentWithAdvanceNameSearch(sortPropertyName);
+    public GetStudentResponseDTO advanceSearchForStudent(@RequestParam String name){
+        return myStudentService.getStudentWithAdvanceNameSearch(name);
     }
 
     @Operation(summary = "Api to get a Student by searching with name or rollID",
@@ -117,7 +120,7 @@ public class MyStudentController {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public GETStudentResponseDTO getAStudentByNameORRollNumber(@RequestParam String name, @RequestParam String roll){
+    public List<GetStudentResponseDTO> getAStudentByNameORRollNumber(@RequestParam(required = false) String name, @RequestParam(required = false) String roll){
         return myStudentService.fetchAStudentByNameOrRollId(name,roll);
     }
 

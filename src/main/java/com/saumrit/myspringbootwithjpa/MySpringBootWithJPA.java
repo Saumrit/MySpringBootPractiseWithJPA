@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
-@EnableJpaRepositories(escapeCharacter = '*')
+@EnableJpaRepositories(escapeCharacter = '-')
 @EntityScan(basePackages = "com.saumrit.myspringbootwithjpa.model")
 //@EnableTransactionManagement
 public class MySpringBootWithJPA {

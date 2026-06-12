@@ -19,13 +19,13 @@ public interface MyStudentRepository extends JpaRepository<Student, String> {
     @Transactional(timeout = 10)
     public List<Student> findByName(String name);
     public Student findByRollId(String rollId);
-    public List<Student> findNRIStudentsFromGivenState(String stateName);
+    public List<Student> findByAddress_StateAndBioData_NriStatus(String stateName,boolean status);
 
     @Query("select s from Student s where s.name = :theName or s.rollId= :theRollId " )
-    public Student findByNameOrRollId(@Param("theName") String theName,@Param("theRollId") String theRollId);
+    public List<Student> findByNameOrRollId(@Param("theName") String theName,@Param("theRollId") String theRollId);
 
-    @Query("select s from Student s where s.name LIKE %?#{escape[0]}% escape ?#{escapeCharacter()} " )
-    public Student searchStudentWithAdvanceNameSearchWithSpecialCharacterSupport(String name, Limit limit);
+    @Query("select s from Student s where s.name like %?#{escape([0])}% escape ?#{escapeCharacter()}" )
+    public List<Student> searchStudentWithAdvanceNameSearchWithSpecialCharacterSupport(String name);
 
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
@@ -34,14 +34,16 @@ public interface MyStudentRepository extends JpaRepository<Student, String> {
     public int updateTheNRIStatusOFAnyStudent(@Param("roll") String rollId,@Param("nriStatusUpdate") Boolean status);
 
     @Query("SELECT s FROM Student s JOIN FETCH s.address a WHERE a.city= ?1 AND a.state= ?2")//Using FETCH to avoid N+1 problem
-    public List<Student> getStudentsFromThisState(String city, String state);
+    public List<Student> getStudentsFromThisStateAndCity(String city, String state);
 
     @Query("SELECT s FROM Student s JOIN FETCH address a WHERE a.city= ?1 AND a.state= ?2")//Here i used address , not s.address , both are same
-    public List<Student> getStudentsFromThisStatex(String city, String state);
+    public List<Student> getStudentsFromThisStateV2(String city, String state);
 
 
-    @Query("SELECT s FROM Student s LEFT JOIN FETCH address a WHERE  a.city= ?1 AND a.state= ?2")
-    public List<Student> getStudentsFromThisStateLeftOuterJoin(String city, String state);
+    //Here No fetch is used, meaning only Student detail is fetched here , no address
+    //Address fields are used only for filtering
+    @Query("SELECT s FROM Student s LEFT JOIN  address a WHERE  a.city= ?1 AND a.state= ?2")
+    public List<Student> getStudentsFromThisStateLeftOuterJoinWithoutFetch(String city, String state);
 
     @Query("SELECT s FROM Student s LEFT JOIN FETCH  s.address a WHERE   a.city IN :cities")
     public List<Student> getStudentsFromTheseCities(List<String> cities);
