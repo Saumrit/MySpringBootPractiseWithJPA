@@ -1,4 +1,13 @@
 spring:
+  rabbitmq:
+    host: localhost
+    port: 5675
+    username: guest
+    password: guest
+    virtual-host: /
+    ssl:
+      enabled: false
+    eager-initializer: true
   datasource:
     url: jdbc:mysql://localhost:3307/myapp_db
     username: admin
@@ -9,8 +18,54 @@ spring:
       ddl-auto: update
 #      naming:
 #        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-  profiles.active: local
+#  profiles.active: local
+  cloud:
+    stream:
+      output-bindings: producestudentadd;producestudentupdate;producestudentdelete;producetutorialcourseadd
+      bindings:
+        producestudentadd:
+          destination: edu
+          contentType: application/json
+          binder: rabbit
+        producestudentupdate:
+          destination: saumrit.edu
+          contentType: application/json
+          binder: rabbit
+        producestudentdelete:
+          destination: saumrit.edu
+          contentType: application/json
+          binder: rabbit
+        producetutorialcourseadd:
+          destination: saumrit.edu
+          contentType: application/json
+          binder: rabbit
+      rabbit:
+        binder:
+          nodes: localhost:5675
+          username: guest
+          password: guest
+          virtual-host: /
+        bindings:
+          producestudentadd:
+            producer:
+              declareExchange: true
+              routing-key-expression: "'saumrit.edu.student.add'"
+          producestudentupdate:
+            producer:
+              declareExchange: true
+              routing-key-expression: "'saumrit.edu.student.update'"
+          producestudentdelete:
+            producer:
+              declareExchange: true
+              routing-key-expression: "'saumrit.edu.student.delete'"
+          producetutorialcourseadd:
+            producer:
+              declareExchange: true
+              routing-key-expression: "'saumrit.edu.tutorialcourse.add'"
 
+logging:
+  level:
+    org.springframework.amqp: DEBUG
 
 management:
   endpoints:

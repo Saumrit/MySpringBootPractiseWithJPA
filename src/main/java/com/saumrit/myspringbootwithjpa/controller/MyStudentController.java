@@ -1,9 +1,6 @@
 package com.saumrit.myspringbootwithjpa.controller;
 
-import com.saumrit.myspringbootwithjpa.dto.AssignmentResponseDTO;
-import com.saumrit.myspringbootwithjpa.dto.GetStudentResponseDTO;
-import com.saumrit.myspringbootwithjpa.dto.PostStudentRequestDTO;
-import com.saumrit.myspringbootwithjpa.dto.StudentWithHouseNumberDetailDto;
+import com.saumrit.myspringbootwithjpa.dto.*;
 import com.saumrit.myspringbootwithjpa.model.Student;
 import com.saumrit.myspringbootwithjpa.model.enums.CourseCategory;
 import com.saumrit.myspringbootwithjpa.service.MyStudentService;
@@ -26,14 +23,26 @@ public class MyStudentController {
 
     @Operation(summary = "Circular Exception in Bidirectional Mapping + @JsonManagedReference + @JsonBackReference",
             description = "Api to add a Student+  Here check the annotation to tackle stackOverFlow Exception ")
-    @PostMapping("/addSingleStudent")
+    @PostMapping("/singleStudent")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Success"),
             @ApiResponse(responseCode = "400",description = "Bad Request"),
             @ApiResponse(responseCode = "500",description = "Internal Server Error") })
-    public void addSingleStudent(@RequestBody PostStudentRequestDTO POSTStudentRequestDTO){
-        myStudentService.addSingleStudent(POSTStudentRequestDTO);
+    public void addSingleStudent(@RequestBody PostStudentRequestDTO postStudentRequestDTO){
+        myStudentService.addSingleStudent(postStudentRequestDTO);
+    }
+
+    @Operation(summary = "Circular Exception in Bidirectional Mapping + @JsonManagedReference + @JsonBackReference",
+            description = "Api to add multiple Students +  Here check the annotation to tackle stackOverFlow Exception ")
+    @PostMapping("/multipleStudents")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "Success"),
+            @ApiResponse(responseCode = "400",description = "Bad Request"),
+            @ApiResponse(responseCode = "500",description = "Internal Server Error") })
+    public void addMultipleStudent(@RequestBody AddMultipleStudentsRequestDTO addMultipleStudentsRequestDTO){
+        myStudentService.addMultipleStudent(addMultipleStudentsRequestDTO);
     }
 
     @Operation(summary = "Api to get All Students",

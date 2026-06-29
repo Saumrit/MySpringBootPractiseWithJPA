@@ -1,10 +1,8 @@
 package com.saumrit.myspringbootwithjpa.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saumrit.myspringbootwithjpa.dto.AssignmentResponseDTO;
-import com.saumrit.myspringbootwithjpa.dto.GetStudentResponseDTO;
-import com.saumrit.myspringbootwithjpa.dto.PostStudentRequestDTO;
-import com.saumrit.myspringbootwithjpa.dto.StudentWithHouseNumberDetailDto;
+import com.saumrit.myspringbootwithjpa.dto.*;
+import com.saumrit.myspringbootwithjpa.message.producers.ProducerStudentAddImpl;
 import com.saumrit.myspringbootwithjpa.model.*;
 import com.saumrit.myspringbootwithjpa.model.enums.CourseCategory;
 import com.saumrit.myspringbootwithjpa.repository.MyAssignmentRepository;
@@ -13,11 +11,11 @@ import com.saumrit.myspringbootwithjpa.repository.MySubjectRepository;
 import com.saumrit.myspringbootwithjpa.util.CommonConvertorUtil;
 import com.saumrit.myspringbootwithjpa.util.UniqueIdGeneratorUtil;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,15 +26,37 @@ public class MyStudentService {
     public final MyAssignmentRepository myAssignmentRepository;
     public final MyTutorialCourseService myTutorialCourseService;
     public final UniqueIdGeneratorUtil uniqueIdGeneratorUtil;
+    public final ProducerStudentAddImpl producerStudent;
     public final ObjectMapper objectMapper;
 
-    public MyStudentService(MyStudentRepository myStudentRepository, MySubjectRepository mySubjectRepository, MyAssignmentRepository myAssignmentRepository, MyTutorialCourseService myTutorialCourseService, UniqueIdGeneratorUtil uniqueIdGeneratorUtil, ObjectMapper objectMapper) {
+    public MyStudentService(MyStudentRepository myStudentRepository, MySubjectRepository mySubjectRepository, MyAssignmentRepository myAssignmentRepository, MyTutorialCourseService myTutorialCourseService, UniqueIdGeneratorUtil uniqueIdGeneratorUtil, ProducerStudentAddImpl producerStudent, ObjectMapper objectMapper) {
         this.myStudentRepository=myStudentRepository;
         this.mySubjectRepository = mySubjectRepository;
         this.myAssignmentRepository = myAssignmentRepository;
         this.myTutorialCourseService = myTutorialCourseService;
         this.uniqueIdGeneratorUtil = uniqueIdGeneratorUtil;
+        this.producerStudent = producerStudent;
         this.objectMapper = objectMapper;
+    }
+
+    public void addSingleStudent(PostStudentRequestDTO POSTStudentRequestDTO){
+        Student student= createStudentFromStudentDTO(POSTStudentRequestDTO);
+        student.setRollId(uniqueIdGeneratorUtil.generateByApacheText(6));
+        myStudentRepository.save(student);
+        producerStudent.send(student);
+    }
+
+    public void addMultipleStudent(AddMultipleStudentsRequestDTO addMultipleStudentsRequestDTO){
+        List<Student> students= new ArrayList<>();
+        if(!ObjectUtils.isEmpty(addMultipleStudentsRequestDTO.getStudentRequestDTOList()))
+            addMultipleStudentsRequestDTO.getStudentRequestDTOList().stream().forEach(x -> {
+                Student student = createStudentFromStudentDTO(x);
+                student.setRollId(uniqueIdGeneratorUtil.generateByApacheText(6));
+                students.add(student);
+            });
+        myStudentRepository.saveAllAndFlush(students);
+
+        producerStudent.sendAll(students);
     }
 
     public List<GetStudentResponseDTO> fetchAllStudent(){
@@ -69,11 +89,7 @@ public class MyStudentService {
          myStudentRepository.deleteById(id);
     }
 
-    public void addSingleStudent(PostStudentRequestDTO POSTStudentRequestDTO){
-        Student student= createStudentFromStudentDTO(POSTStudentRequestDTO);
-        student.setRollId(uniqueIdGeneratorUtil.generateByApacheText(6));
-        myStudentRepository.save(student);
-    }
+
 
     public List<GetStudentResponseDTO> getTheNRIStudentFromThisState(String state){
         List<Student> nriStudents= myStudentRepository.findByAddress_StateAndBioData_NriStatus(state,true);
